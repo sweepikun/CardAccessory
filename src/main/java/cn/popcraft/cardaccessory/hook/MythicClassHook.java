@@ -1,7 +1,6 @@
 package cn.popcraft.cardaccessory.hook;
 
 import cn.popcraft.cardaccessory.CardAccessorySystem;
-import io.lumine.mythic.lib.api.player.MMOPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -46,7 +45,7 @@ public class MythicClassHook {
         }
         
         try {
-            MMOPlayer mmoPlayer = MMOPlayer.get(player);
+            Object mmoPlayer = mythicPlayerClass.getMethod("get", Player.class).invoke(null, player);
             if (mmoPlayer != null) {
                 Object profession = getProfessionMethod.invoke(mmoPlayer);
                 if (profession != null) {

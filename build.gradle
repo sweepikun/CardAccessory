@@ -4,7 +4,15 @@ plugins {
 
 group = 'cn.popcraft'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = '1.8'
+
+// 添加UTF-8编码设置
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs += '-Dfile.encoding=UTF-8'
+}
 
 repositories {
     mavenCentral()
@@ -16,30 +24,43 @@ repositories {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
+    // ✅ 保留 codemc（公开，无需认证）
     maven {
-        name = 'itemsadder'
-        url = 'https://maven.pkg.github.com/LoneDev6/ItemsAdder'
+        name = 'codemc-repo'
+        url = 'https://repo.codemc.io/repository/maven-public/'
     }
+    // ✅ Lumine (MythicMobs) 是公开的
     maven {
         name = 'lumine-repo'
         url = 'https://mvn.lumine.io/repository/maven-public/'
     }
-    maven {
-        name = 'codemc-repo'
-        url = 'https://repo.codemc.io/repository/maven/'
-    }
+    // ✅ JitPack 用于其他可能的库（公开）
     maven {
         name = 'jitpack'
         url = 'https://jitpack.io'
     }
+    // itemsadder仓库
+    maven {
+        name = 'itemsadder'
+        url = 'https://maven.devs.beer/'
+    }
+    maven { 
+        url = 'https://repo.rosewooddev.io/repository/public/' 
+    }
+
+    // ❌ 删除以下 GitHub 私有源（需要 token）
+    // maven {
+    //     name = 'itemsadder'
+    //     url = 'https://maven.pkg.github.com/LoneDev6/ItemsAdder'
+    // }
 }
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
-    compileOnly 'dev.lone.itemsadder:itemsadder-api:3.6.1'
-    compileOnly 'io.lumine:Mythic-Dist:5.2.1'
-    compileOnly 'org.black_ixx:playerpoints:3.2.6'
-    compileOnly 'com.github.MilkBowl:VaultAPI:1.7.1'
+    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.1'       // ← 来自 codemc
+    compileOnly 'io.lumine:Mythic-Dist:5.2.1'                  // ← 来自 lumine
+    compileOnly 'org.black_ixx:playerpoints:3.2.6'              // ← 来自 codemc
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'              // ← 来自 jitpack
     implementation 'org.jetbrains:annotations:24.0.1'
 }
 

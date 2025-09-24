@@ -1,7 +1,9 @@
 package cn.popcraft.cardaccessory.gui;
 
 import cn.popcraft.cardaccessory.CardAccessorySystem;
+import cn.popcraft.cardaccessory.manager.EffectManager;
 import cn.popcraft.cardaccessory.model.Card;
+import cn.popcraft.cardaccessory.model.EquipmentSlot;
 import cn.popcraft.cardaccessory.model.PlayerEquipment;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,8 +44,9 @@ public class CardGUI implements InventoryHolder {
         
         // 填充已装备的卡牌
         for (int i = 0; i < EQUIPMENT_SLOTS.length; i++) {
-            String cardId = equipment.getCard(i);
-            if (cardId != null && !cardId.isEmpty()) {
+            EquipmentSlot cardSlot = equipment.getCard(i);
+            if (cardSlot != null && !cardSlot.isEmpty()) {
+                String cardId = cardSlot.getId();
                 ItemStack cardItem = CardAccessorySystem.getInstance()
                     .getItemManager().createCardItem(cardId);
                 inventory.setItem(EQUIPMENT_SLOTS[i], cardItem);
@@ -53,25 +56,26 @@ public class CardGUI implements InventoryHolder {
             }
         }
         
-        // 在其他槽位放置玩家背包中的卡牌（示例实现）
-        // 实际应用中需要扫描玩家整个背包中的卡牌
+        // 扫描玩家背包中的卡牌并显示在GUI中
         int slotIndex = 9; // 从第二行开始放置可装备的卡牌
-        for (Card card : CardAccessorySystem.getInstance().getItemManager().getAllCards()) {
-            if (slotIndex >= GUI_SIZE) break; // 防止超出GUI范围
-            
-            // 检查这张卡牌是否已经装备
-            boolean isEquipped = false;
-            for (int i = 0; i < 4; i++) {
-                if (card.getId().equals(equipment.getCard(i))) {
-                    isEquipped = true;
-                    break;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && !item.getType().equals(Material.AIR)) {
+                if (CardAccessorySystem.getInstance().getItemManager().isCard(item)) {
+                    // 检查这张卡牌是否已经装备
+                    boolean isEquipped = false;
+                    String cardId = CardAccessorySystem.getInstance().getItemManager().getCardId(item);
+                    for (int i = 0; i < 4; i++) {
+                        EquipmentSlot slot = equipment.getCard(i);
+                        if (slot != null && cardId.equals(slot.getId())) {
+                            isEquipped = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!isEquipped && slotIndex < GUI_SIZE) {
+                        inventory.setItem(slotIndex++, item.clone());
+                    }
                 }
-            }
-            
-            if (!isEquipped) {
-                ItemStack cardItem = CardAccessorySystem.getInstance()
-                    .getItemManager().createCardItem(card.getId());
-                inventory.setItem(slotIndex++, cardItem);
             }
         }
     }
@@ -111,7 +115,8 @@ public class CardGUI implements InventoryHolder {
         // 查找第一个空槽位
         int emptySlot = -1;
         for (int i = 0; i < 4; i++) {
-            if (equipment.getCard(i) == null || equipment.getCard(i).isEmpty()) {
+            EquipmentSlot slot = equipment.getCard(i);
+            if (slot == null || slot.isEmpty()) {
                 emptySlot = i;
                 break;
             }
@@ -137,8 +142,8 @@ public class CardGUI implements InventoryHolder {
         PlayerEquipment equipment = CardAccessorySystem.getInstance()
             .getEquipManager().getPlayerEquipment(player);
         
-        String cardId = equipment.getCard(slot);
-        if (cardId == null || cardId.isEmpty()) return;
+        EquipmentSlot cardSlot = equipment.getCard(slot);
+        if (cardSlot == null || cardSlot.isEmpty()) return;
         
         // 移除卡牌效果
         EffectManager.removeCardEffects(player);

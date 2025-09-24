@@ -1,2 +1,6 @@
 /.gradle
 /build
+*.log
+*.mdmp
+*.txt
+/prompt

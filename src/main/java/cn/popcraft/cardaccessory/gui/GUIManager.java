@@ -1,6 +1,7 @@
 package cn.popcraft.cardaccessory.gui;
 
 import cn.popcraft.cardaccessory.CardAccessorySystem;
+import cn.popcraft.cardaccessory.model.EquipmentSlot;
 import cn.popcraft.cardaccessory.model.PlayerEquipment;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,8 +26,9 @@ public class GUIManager {
         
         // 填充已装备的卡牌
         for (int i = 0; i < 4; i++) {
-            String cardId = equipment.getCard(i);
-            if (cardId != null && !cardId.isEmpty()) {
+            EquipmentSlot cardSlot = equipment.getCard(i);
+            if (cardSlot != null && !cardSlot.isEmpty()) {
+                String cardId = cardSlot.getId();
                 ItemStack cardItem = CardAccessorySystem.getInstance()
                     .getItemManager().createCardItem(cardId);
                 inventory.setItem(i, cardItem);
@@ -36,8 +38,28 @@ public class GUIManager {
             }
         }
         
-        // 填充玩家背包中的其他卡牌（示例）
-        // 实际实现中需要扫描玩家背包中的有效卡牌
+        // 扫描玩家背包中的卡牌并显示在GUI中
+        int slotIndex = 9; // 从第二行开始放置可装备的卡牌
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && !item.getType().equals(Material.AIR)) {
+                if (CardAccessorySystem.getInstance().getItemManager().isCard(item)) {
+                    // 检查这张卡牌是否已经装备
+                    boolean isEquipped = false;
+                    String cardId = CardAccessorySystem.getInstance().getItemManager().getCardId(item);
+                    for (int i = 0; i < 4; i++) {
+                        EquipmentSlot slot = equipment.getCard(i);
+                        if (slot != null && cardId.equals(slot.getId())) {
+                            isEquipped = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!isEquipped && slotIndex < CARD_GUI_SIZE) {
+                        inventory.setItem(slotIndex++, item.clone());
+                    }
+                }
+            }
+        }
         
         player.openInventory(inventory);
     }
@@ -50,8 +72,9 @@ public class GUIManager {
         
         // 填充已装备的饰品
         for (int i = 0; i < 2; i++) {
-            String accessoryId = equipment.getAccessory(i);
-            if (accessoryId != null && !accessoryId.isEmpty()) {
+            EquipmentSlot accessorySlot = equipment.getAccessory(i);
+            if (accessorySlot != null && !accessorySlot.isEmpty()) {
+                String accessoryId = accessorySlot.getId();
                 ItemStack accessoryItem = CardAccessorySystem.getInstance()
                     .getItemManager().createAccessoryItem(accessoryId);
                 inventory.setItem(i, accessoryItem);
@@ -61,8 +84,28 @@ public class GUIManager {
             }
         }
         
-        // 填充玩家背包中的其他饰品（示例）
-        // 实际实现中需要扫描玩家背包中的有效饰品
+        // 扫描玩家背包中的饰品并显示在GUI中
+        int slotIndex = 9; // 从第二行开始放置可装备的饰品
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && !item.getType().equals(Material.AIR)) {
+                if (CardAccessorySystem.getInstance().getItemManager().isAccessory(item)) {
+                    // 检查这个饰品是否已经装备
+                    boolean isEquipped = false;
+                    String accessoryId = CardAccessorySystem.getInstance().getItemManager().getAccessoryId(item);
+                    for (int i = 0; i < 2; i++) {
+                        EquipmentSlot slot = equipment.getAccessory(i);
+                        if (slot != null && accessoryId.equals(slot.getId())) {
+                            isEquipped = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!isEquipped && slotIndex < ACCESSORY_GUI_SIZE) {
+                        inventory.setItem(slotIndex++, item.clone());
+                    }
+                }
+            }
+        }
         
         player.openInventory(inventory);
     }

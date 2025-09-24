@@ -3,12 +3,22 @@ package cn.popcraft.cardaccessory.manager;
 import cn.popcraft.cardaccessory.CardAccessorySystem;
 import cn.popcraft.cardaccessory.model.PlayerEquipment;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DataManager {
+    
+    private static final Map<UUID, PlayerEquipment> playerEquipmentCache = new HashMap<>();
+    
+    public static PlayerEquipment getPlayerEquipment(Player player) {
+        return playerEquipmentCache.computeIfAbsent(player.getUniqueId(), 
+            uuid -> loadPlayerData(uuid));
+    }
     
     public static void savePlayerData(UUID playerUUID, PlayerEquipment equipment) {
         File dataFolder = new File(CardAccessorySystem.getInstance().getDataFolder(), "player_data");

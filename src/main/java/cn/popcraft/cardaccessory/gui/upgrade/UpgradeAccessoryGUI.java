@@ -135,7 +135,18 @@ public class UpgradeAccessoryGUI implements InventoryHolder {
             if (!hasEnough) {
                 canAfford = false;
                 // 添加红色边框效果
-                // 注意：实际实现中可能需要使用特殊的物品来表示红色边框
+                // 使用红色染色玻璃板作为边框
+                ItemStack borderItem = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+                ItemMeta borderMeta = borderItem.getItemMeta();
+                if (borderMeta != null) {
+                    borderMeta.setDisplayName(ChatColor.RED + "资源不足");
+                    List<String> borderLore = new ArrayList<>();
+                    borderLore.add(ChatColor.GRAY + "需要: " + cost.getAmount() + " 个");
+                    borderLore.add(ChatColor.GRAY + "你拥有: " + getPlayerResourceAmount(cost) + " 个");
+                    borderMeta.setLore(borderLore);
+                    borderItem.setItemMeta(borderMeta);
+                }
+                costItem = borderItem;
             }
             
             inventory.setItem(slotIndex++, costItem);
@@ -189,7 +200,8 @@ public class UpgradeAccessoryGUI implements InventoryHolder {
             case "currency":
                 // 检查货币
                 if ("playerpoints".equalsIgnoreCase(cost.getId())) {
-                    return cn.popcraft.cardaccessory.hook.PlayerPointsHook.hasPlayerPoints(player, cost.getAmount());
+                    int points = cn.popcraft.cardaccessory.hook.PlayerPointsHook.getPlayerPoints(player);
+                    return points >= cost.getAmount();
                 } else if ("coins".equalsIgnoreCase(cost.getId())) {
                     return cn.popcraft.cardaccessory.hook.VaultHook.hasPlayerMoney(player, cost.getAmount());
                 }
@@ -197,6 +209,35 @@ public class UpgradeAccessoryGUI implements InventoryHolder {
                 
             default:
                 return false;
+        }
+    }
+    
+    private int getPlayerResourceAmount(UpgradeCost cost) {
+        switch (cost.getType().toLowerCase()) {
+            case "item":
+                // 检查玩家背包中的物品
+                ItemStack item = CustomItemLoader.loadItem(cost.getId());
+                if (item.getType() == Material.AIR) return 0;
+                
+                int count = 0;
+                for (ItemStack invItem : player.getInventory().getContents()) {
+                    if (invItem != null && invItem.isSimilar(item)) {
+                        count += invItem.getAmount();
+                    }
+                }
+                return count;
+                
+            case "currency":
+                // 检查货币
+                if ("playerpoints".equalsIgnoreCase(cost.getId())) {
+                    return cn.popcraft.cardaccessory.hook.PlayerPointsHook.getPlayerPoints(player);
+                } else if ("coins".equalsIgnoreCase(cost.getId())) {
+                    return (int) cn.popcraft.cardaccessory.hook.VaultHook.getPlayerBalance(player);
+                }
+                return 0;
+                
+            default:
+                return 0;
         }
     }
     

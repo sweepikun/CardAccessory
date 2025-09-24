@@ -1,12 +1,15 @@
 package cn.popcraft.cardaccessory.manager;
 
 import cn.popcraft.cardaccessory.CardAccessorySystem;
+import cn.popcraft.cardaccessory.model.Accessory;
+import cn.popcraft.cardaccessory.model.EquipmentSlot;
 import cn.popcraft.cardaccessory.model.PlayerEquipment;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,15 +17,16 @@ import java.util.UUID;
 public class EffectManager {
     // 存储玩家属性修饰符的UUID，用于移除时使用
     private static final Map<UUID, Map<String, UUID>> playerAttributeModifiers = new HashMap<>();
-    
+
     public static void applyCardEffects(Player player) {
         PlayerEquipment equipment = CardAccessorySystem.getInstance()
             .getEquipManager().getPlayerEquipment(player);
         
         // 遍历所有卡牌槽位并应用属性
         for (int i = 0; i < 4; i++) {
-            String cardId = equipment.getCard(i);
-            if (cardId != null && !cardId.isEmpty()) {
+            EquipmentSlot cardSlot = equipment.getCard(i);
+            if (cardSlot != null && !cardSlot.isEmpty()) {
+                String cardId = cardSlot.getId();
                 var card = CardAccessorySystem.getInstance().getItemManager().getCard(cardId);
                 if (card != null) {
                     // 应用所有属性
@@ -40,8 +44,9 @@ public class EffectManager {
         
         // 遍历所有卡牌槽位并移除属性
         for (int i = 0; i < 4; i++) {
-            String cardId = equipment.getCard(i);
-            if (cardId != null && !cardId.isEmpty()) {
+            EquipmentSlot cardSlot = equipment.getCard(i);
+            if (cardSlot != null && !cardSlot.isEmpty()) {
+                String cardId = cardSlot.getId();
                 var card = CardAccessorySystem.getInstance().getItemManager().getCard(cardId);
                 if (card != null) {
                     // 移除所有属性
@@ -61,8 +66,9 @@ public class EffectManager {
         
         // 遍历所有饰品槽位并计算伤害加成
         for (int i = 0; i < 2; i++) {
-            String accessoryId = equipment.getAccessory(i);
-            if (accessoryId != null && !accessoryId.isEmpty()) {
+            EquipmentSlot accessorySlot = equipment.getAccessory(i);
+            if (accessorySlot != null && !accessorySlot.isEmpty()) {
+                String accessoryId = accessorySlot.getId();
                 var accessory = CardAccessorySystem.getInstance()
                     .getItemManager().getAccessory(accessoryId);
                 if (accessory != null) {
@@ -152,11 +158,19 @@ public class EffectManager {
                 Map<String, UUID> modifiers = playerAttributeModifiers.get(player.getUniqueId());
                 if (modifiers != null && modifiers.containsKey(attributeKey)) {
                     UUID modifierId = modifiers.get(attributeKey);
-                    AttributeModifier modifier = attributeInstance.getModifier(modifierId);
                     
-                    if (modifier != null) {
+                    // 通过查找修饰符对象来移除
+                    AttributeModifier targetModifier = null;
+                    for (AttributeModifier modifier : attributeInstance.getModifiers()) {
+                        if (modifier.getUniqueId().equals(modifierId)) {
+                            targetModifier = modifier;
+                            break;
+                        }
+                    }
+                    
+                    if (targetModifier != null) {
                         // 移除修饰符
-                        attributeInstance.removeModifier(modifier);
+                        attributeInstance.removeModifier(targetModifier);
                     }
                     
                     // 从存储中移除该修饰符记录

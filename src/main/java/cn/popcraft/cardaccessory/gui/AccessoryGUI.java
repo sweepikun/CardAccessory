@@ -2,6 +2,7 @@ package cn.popcraft.cardaccessory.gui;
 
 import cn.popcraft.cardaccessory.CardAccessorySystem;
 import cn.popcraft.cardaccessory.model.Accessory;
+import cn.popcraft.cardaccessory.model.EquipmentSlot;
 import cn.popcraft.cardaccessory.model.PlayerEquipment;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,8 +43,9 @@ public class AccessoryGUI implements InventoryHolder {
         
         // 填充已装备的饰品
         for (int i = 0; i < EQUIPMENT_SLOTS.length; i++) {
-            String accessoryId = equipment.getAccessory(i);
-            if (accessoryId != null && !accessoryId.isEmpty()) {
+            EquipmentSlot accessorySlot = equipment.getAccessory(i);
+            if (accessorySlot != null && !accessorySlot.isEmpty()) {
+                String accessoryId = accessorySlot.getId();
                 ItemStack accessoryItem = CardAccessorySystem.getInstance()
                     .getItemManager().createAccessoryItem(accessoryId);
                 inventory.setItem(EQUIPMENT_SLOTS[i], accessoryItem);
@@ -53,25 +55,26 @@ public class AccessoryGUI implements InventoryHolder {
             }
         }
         
-        // 在其他槽位放置玩家背包中的饰品（示例实现）
-        // 实际应用中需要扫描玩家整个背包中的饰品
+        // 扫描玩家背包中的饰品并显示在GUI中
         int slotIndex = 9; // 从第二行开始放置可装备的饰品
-        for (Accessory accessory : CardAccessorySystem.getInstance().getItemManager().getAllAccessories()) {
-            if (slotIndex >= GUI_SIZE) break; // 防止超出GUI范围
-            
-            // 检查这个饰品是否已经装备
-            boolean isEquipped = false;
-            for (int i = 0; i < 2; i++) {
-                if (accessory.getId().equals(equipment.getAccessory(i))) {
-                    isEquipped = true;
-                    break;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && !item.getType().equals(Material.AIR)) {
+                if (CardAccessorySystem.getInstance().getItemManager().isAccessory(item)) {
+                    // 检查这个饰品是否已经装备
+                    boolean isEquipped = false;
+                    String accessoryId = CardAccessorySystem.getInstance().getItemManager().getAccessoryId(item);
+                    for (int i = 0; i < 2; i++) {
+                        EquipmentSlot slot = equipment.getAccessory(i);
+                        if (slot != null && accessoryId.equals(slot.getId())) {
+                            isEquipped = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!isEquipped && slotIndex < GUI_SIZE) {
+                        inventory.setItem(slotIndex++, item.clone());
+                    }
                 }
-            }
-            
-            if (!isEquipped) {
-                ItemStack accessoryItem = CardAccessorySystem.getInstance()
-                    .getItemManager().createAccessoryItem(accessory.getId());
-                inventory.setItem(slotIndex++, accessoryItem);
             }
         }
     }
@@ -111,7 +114,8 @@ public class AccessoryGUI implements InventoryHolder {
         // 查找第一个空槽位
         int emptySlot = -1;
         for (int i = 0; i < 2; i++) {
-            if (equipment.getAccessory(i) == null || equipment.getAccessory(i).isEmpty()) {
+            EquipmentSlot slot = equipment.getAccessory(i);
+            if (slot == null || slot.isEmpty()) {
                 emptySlot = i;
                 break;
             }
@@ -134,11 +138,11 @@ public class AccessoryGUI implements InventoryHolder {
         PlayerEquipment equipment = CardAccessorySystem.getInstance()
             .getEquipManager().getPlayerEquipment(player);
         
-        String accessoryId = equipment.getAccessory(slot);
-        if (accessoryId == null || accessoryId.isEmpty()) return;
+        EquipmentSlot accessorySlot = equipment.getAccessory(slot);
+        if (accessorySlot == null || accessorySlot.isEmpty()) return;
         
         // 获取饰品物品并尝试返还给玩家
-        ItemStack accessoryItem = CardAccessorySystem.getInstance().getItemManager().createAccessoryItem(accessoryId);
+        ItemStack accessoryItem = CardAccessorySystem.getInstance().getItemManager().createAccessoryItem(accessorySlot.getId());
         boolean addItem = player.getInventory().addItem(accessoryItem).isEmpty();
         if (!addItem) {
             // 背包已满，掉落地上
