@@ -1,6 +1,9 @@
-/.gradle
-/build
+.gradle/
+build/
+!build.gradle
+!settings.gradle
+prompt/
 *.log
 *.mdmp
-*.txt
-/prompt
+replay_*.log
+hs_err_pid*.log

@@ -126,6 +126,9 @@ accessories:
               amount: 1
 ```
 
+### 详细配置说明
+有关配置文件的详细说明，请参阅 [CONFIGURATION.md](CONFIGURATION.md) 文件。
+
 ## 🔌 插件依赖
 
 ### 必需依赖

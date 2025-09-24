@@ -1,0 +1,141 @@
+package cn.popcraft.cardaccessory.manager;
+
+import cn.popcraft.cardaccessory.model.PlayerEquipment;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.Player;
+
+import java.util.Collection;
+import java.util.UUID;
+
+public class EffectManager {
+    
+    public static void applyCardEffects(Player player) {
+        PlayerEquipment equipment = DataManager.getPlayerEquipment(player);
+        
+        // 应用卡牌效果
+        for (int i = 0; i < equipment.getCardSlots().length; i++) {
+            String cardId = equipment.getCard(i).getId();
+            int level = equipment.getCard(i).getLevel();
+            if (!cardId.isEmpty()) {
+                // 应用卡牌效果的逻辑
+            }
+        }
+        
+        // 应用饰品效果
+        for (int i = 0; i < equipment.getAccessorySlots().length; i++) {
+            String accessoryId = equipment.getAccessory(i).getId();
+            int level = equipment.getAccessory(i).getLevel();
+            if (!accessoryId.isEmpty()) {
+                // 应用饰品效果的逻辑
+            }
+        }
+    }
+    
+    public static void removeCardEffects(Player player) {
+        PlayerEquipment equipment = DataManager.getPlayerEquipment(player);
+        
+        // 移除卡牌效果
+        for (int i = 0; i < equipment.getCardSlots().length; i++) {
+            String cardId = equipment.getCard(i).getId();
+            int level = equipment.getCard(i).getLevel();
+            if (!cardId.isEmpty()) {
+                // 移除卡牌效果的逻辑
+            }
+        }
+        
+        // 移除饰品效果
+        for (int i = 0; i < equipment.getAccessorySlots().length; i++) {
+            String accessoryId = equipment.getAccessory(i).getId();
+            int level = equipment.getAccessory(i).getLevel();
+            if (!accessoryId.isEmpty()) {
+                // 移除饰品效果的逻辑
+            }
+        }
+    }
+    
+    private static void addBukkitAttribute(Player player, String attribute, double value) {
+        AttributeInstance attributeInstance = player.getAttribute(Attribute.valueOf(attribute));
+        if (attributeInstance != null) {
+            UUID modifierId = UUID.nameUUIDFromBytes((attribute + "_cardaccessory").getBytes());
+            AttributeModifier modifier = new AttributeModifier(modifierId, "cardaccessory", value, AttributeModifier.Operation.ADD_NUMBER);
+            
+            // 先移除旧的修饰符（如果存在）
+            removeBukkitAttribute(player, attribute, value);
+            
+            // 添加新的修饰符
+            attributeInstance.addModifier(modifier);
+        }
+    }
+    
+    private static void removeBukkitAttribute(Player player, String attribute, double value) {
+        AttributeInstance attributeInstance = player.getAttribute(Attribute.valueOf(attribute));
+        if (attributeInstance != null) {
+            UUID modifierId = UUID.nameUUIDFromBytes((attribute + "_cardaccessory").getBytes());
+            
+            // 检查是否有这个修饰符
+            try {
+                // 尝试使用新版本的方法
+                boolean hasModifier = attributeInstance.getModifier(modifierId) != null;
+                if (hasModifier) {
+                    // 移除旧的修饰符
+                    try {
+                        // 尝试使用新版本的方法
+                        attributeInstance.removeModifier(modifierId);
+                    } catch (NoSuchMethodError e) {
+                        // 如果新方法不存在，尝试使用旧版本的方法
+                        try {
+                            // 获取所有修饰符并找到匹配的
+                            Collection<AttributeModifier> modifiers = attributeInstance.getModifiers();
+                            AttributeModifier targetModifier = null;
+                            for (AttributeModifier modifier : modifiers) {
+                                if (modifier.getUniqueId().equals(modifierId)) {
+                                    targetModifier = modifier;
+                                    break;
+                                }
+                            }
+                            if (targetModifier != null) {
+                                attributeInstance.removeModifier(targetModifier);
+                            }
+                        } catch (Exception ex) {
+                            // 忽略异常
+                        }
+                    }
+                }
+            } catch (NoSuchMethodError e) {
+                // 如果getModifier方法不存在，使用旧版本的方法
+                try {
+                    // 获取所有修饰符并找到匹配的
+                    Collection<AttributeModifier> existingModifiers = attributeInstance.getModifiers();
+                    AttributeModifier targetModifier = null;
+                    for (AttributeModifier modifier : existingModifiers) {
+                        if (modifier.getUniqueId().equals(modifierId)) {
+                            targetModifier = modifier;
+                            break;
+                        }
+                    }
+                    if (targetModifier != null) {
+                        attributeInstance.removeModifier(targetModifier);
+                    }
+                } catch (Exception ex) {
+                    // 忽略异常
+                }
+            }
+        }
+    }
+    
+    // 清除玩家的所有属性修饰符记录
+    public static void clearPlayerModifiers(Player player) {
+        // 此方法现在是空的，因为我们不再需要手动管理UUID映射
+    }
+}
+```
+
+c:\Users\Administrator\Desktop\repos\CardAccessorySystem\src\main\java\cn\popcraft\cardaccessory\manager\EffectManager.java
+```java
+<<<<<<< SEARCH
+import cn.popcraft.cardaccessory.CardAccessorySystem;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
