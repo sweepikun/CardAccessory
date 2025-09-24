@@ -1,0 +1,10 @@
+name: CardAccessorySystem
+version: 1.0
+main: cn.popcraft.cardaccessory.CardAccessorySystem
+api-version: 1.16
+softdepend: [ItemsAdder, MythicMobs, PlayerPoints, Vault]
+commands:
+  cardaccessory:
+    description: 管理卡牌和饰品
+    usage: /cardaccessory [card|accessory]
+    aliases: [cas]

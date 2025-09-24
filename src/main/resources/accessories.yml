@@ -1,0 +1,16 @@
+accessories:
+  thunder_amulet:
+    name: "&6雷霆吊坠"
+    lore:
+      - "&7提升技能伤害"
+      - "&e+15% 技能伤害加成"
+    item: "AMETHYST_SHARD"
+    skill_damage_multiplier: 1.15
+
+  poison_ring:
+    name: "&a剧毒指环"
+    lore:
+      - "&7中毒类技能伤害提升"
+      - "&e+25% 伤害"
+    item: "EMERALD"
+    skill_damage_multiplier: 1.25

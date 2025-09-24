@@ -1,0 +1,15 @@
+# CardAccessorySystem 配置文件
+
+settings:
+  # 特效设置
+  effects-enabled: true
+  
+  # 粒子效果设置
+  particles:
+    enabled: true
+    distance: 32 # 粒子效果播放的最大距离
+  
+  # 音效设置
+  sounds:
+    enabled: true
+    distance: 32 # 音效播放的最大距离

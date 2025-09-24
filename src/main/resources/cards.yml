@@ -1,0 +1,18 @@
+cards:
+  fire_heart:
+    name: "&c火焰之心"
+    lore:
+      - "&7提升生命值上限"
+      - "&e+20 最大生命值"
+    item: "NETHERITE_SCRAP"
+    attributes:
+      MAX_HEALTH: 20.0
+
+  ice_brain:
+    name: "&b寒冰之脑"
+    lore:
+      - "&7提升攻击力"
+      - "&e+5 攻击伤害"
+    item: "BLUE_ICE"
+    attributes:
+      ATTACK_DAMAGE: 5.0
