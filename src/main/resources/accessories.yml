@@ -6,6 +6,18 @@ accessories:
       - "&e+15% 技能伤害加成"
     item: "AMETHYST_SHARD"
     skill_damage_multiplier: 1.15
+    effects:
+      # 基础技能伤害加成
+      skill_damage_1:
+        type: "skill_damage"
+        options:
+          multiplier: 1.15
+      # 暴击效果
+      critical_1:
+        type: "critical_chance"
+        options:
+          chance: 0.1  # 10%暴击率
+          multiplier: 1.5  # 1.5倍暴击伤害
 
   poison_ring:
     name: "&a剧毒指环"
@@ -14,3 +26,66 @@ accessories:
       - "&e+25% 伤害"
     item: "EMERALD"
     skill_damage_multiplier: 1.25
+    effects:
+      # 针对特定技能的伤害加成
+      skill_damage_1:
+        type: "skill_damage"
+        options:
+          multiplier: 1.25
+          skill: "poison"  # 只对包含"poison"名称的技能生效
+      # 生命偷取效果
+      life_steal_1:
+        type: "life_steal"
+        options:
+          percentage: 0.1  # 10%生命偷取
+
+  strength_gauntlet:
+    name: "&c力量手套"
+    lore:
+      - "&7提供力量效果和额外伤害"
+    item: "GOLDEN_SWORD"
+    skill_damage_multiplier: 1.1
+    effects:
+      # 药水效果
+      potion_1:
+        type: "potion_effect"
+        options:
+          potion: "INCREASE_DAMAGE"  # 力量效果
+          amplifier: 1  # 力量II
+          duration: 200  # 10秒 (200 ticks)
+      # 技能伤害加成
+      skill_damage_1:
+        type: "skill_damage"
+        options:
+          multiplier: 1.1
+      # 高暴击效果
+      critical_1:
+        type: "critical_chance"
+        options:
+          chance: 0.2  # 20%暴击率
+          multiplier: 2.0  # 2倍暴击伤害
+
+  wisdom_amulet:
+    name: "&b智慧护符"
+    lore:
+      - "&7提升智慧和恢复能力"
+    item: "LAPIS_LAZULI"
+    skill_damage_multiplier: 1.05
+    effects:
+      # 药水效果
+      potion_1:
+        type: "potion_effect"
+        options:
+          potion: "REGENERATION"  # 恢复效果
+          amplifier: 0  # 恢复I
+          duration: 100  # 5秒 (100 ticks)
+      # 技能伤害加成
+      skill_damage_1:
+        type: "skill_damage"
+        options:
+          multiplier: 1.05
+      # 生命偷取效果
+      life_steal_1:
+        type: "life_steal"
+        options:
+          percentage: 0.05  # 5%生命偷取

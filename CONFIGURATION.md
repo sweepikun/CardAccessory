@@ -192,6 +192,23 @@ accessories:
     # 职业限制（可选，需要MythicLib支持）
     required_class: "mage"
     
+    # 饰品效果（新功能）
+    effects:
+      # 效果ID（唯一标识符）
+      skill_damage_1:
+        # 效果类型
+        type: "skill_damage"
+        # 效果选项
+        options:
+          multiplier: 1.15
+          
+      # 暴击效果示例
+      critical_1:
+        type: "critical_chance"
+        options:
+          chance: 0.1
+          multiplier: 1.5
+    
     # 升级系统配置
     upgrade:
       # 最大等级
@@ -244,6 +261,41 @@ accessories:
 - `required_class`: 
   - 类型: String
   - 说明: 玩家需要拥有的职业才能装备该饰品（需要MythicLib支持），留空表示无职业限制
+
+#### 效果字段（新功能）
+
+- `effects`: 
+  - 类型: Object Map
+  - 说明: 饰品提供的各种效果
+  - 效果对象字段:
+    - `type`: 效果类型（见下文效果类型列表）
+    - `target`: 效果目标（可选）
+    - `options`: 效果选项（根据效果类型不同而不同）
+
+##### 支持的效果类型
+
+1. `skill_damage` - 技能伤害加成
+   - 选项:
+     - `multiplier`: 伤害倍数（如1.15表示+15%伤害）
+     - `skill`: 特定技能名称（可选，只对该技能生效）
+
+2. `potion_effect` - 药水效果
+   - 选项:
+     - `potion`: 药水效果类型（如"INCREASE_DAMAGE"、"REGENERATION"等）
+     - `amplifier`: 效果等级（0表示I级，1表示II级，以此类推）
+     - `duration`: 持续时间（单位为ticks，20 ticks = 1秒）
+     - `ambient`: 是否为环境效果（true/false，默认false）
+     - `particles`: 是否显示粒子效果（true/false，默认true）
+     - `icon`: 是否显示图标（true/false，默认true）
+
+3. `critical_chance` - 暴击几率
+   - 选项:
+     - `chance`: 暴击几率（0.0-1.0之间，如0.1表示10%）
+     - `multiplier`: 暴击伤害倍数（如1.5表示1.5倍伤害）
+
+4. `life_steal` - 生命偷取
+   - 选项:
+     - `percentage`: 生命偷取百分比（如0.1表示造成伤害的10%转化为生命值）
 
 #### 升级字段
 
@@ -368,6 +420,16 @@ accessories:
     base_skill_damage_multiplier: 1.15
     permission: "cas.accessory.thunder_amulet"
     required_class: "mage"
+    effects:
+      skill_damage_1:
+        type: "skill_damage"
+        options:
+          multiplier: 1.15
+      critical_1:
+        type: "critical_chance"
+        options:
+          chance: 0.1
+          multiplier: 1.5
     upgrade:
       max_level: 5
       levels:
@@ -396,6 +458,21 @@ accessories:
     base_skill_damage_multiplier: 1.25
     permission: ""
     required_class: ""
+    effects:
+      skill_damage_1:
+        type: "skill_damage"
+        options:
+          multiplier: 1.25
+      life_steal_1:
+        type: "life_steal"
+        options:
+          percentage: 0.1
+      potion_1:
+        type: "potion_effect"
+        options:
+          potion: "INCREASE_DAMAGE"
+          amplifier: 0
+          duration: 100
     upgrade:
       max_level: 3
       levels:
@@ -474,6 +551,37 @@ cost_to_next:
     amount: 1
 ```
 
+### 4. 使用效果系统创建复杂饰品
+
+通过组合不同效果，可以创建功能丰富的饰品：
+
+```yaml
+effects:
+  # 多重技能伤害加成
+  skill_damage_1:
+    type: "skill_damage"
+    options:
+      multiplier: 1.15
+  # 暴击效果
+  critical_1:
+    type: "critical_chance"
+    options:
+      chance: 0.1
+      multiplier: 1.5
+  # 药水效果
+  potion_1:
+    type: "potion_effect"
+    options:
+      potion: "SPEED"
+      amplifier: 1
+      duration: 200
+  # 生命偷取
+  life_steal_1:
+    type: "life_steal"
+    options:
+      percentage: 0.05
+```
+
 ## 常见问题
 
 ### 1. 配置文件修改后不生效
@@ -491,3 +599,7 @@ cost_to_next:
 ### 4. 职业限制不工作
 
 职业限制需要MythicLib支持，确保MythicMobs和MythicLib插件已正确安装并启用。
+
+### 5. 效果不生效
+
+确保MythicMobs插件已正确安装并启用，因为大部分效果依赖于MythicMobs的技能系统。

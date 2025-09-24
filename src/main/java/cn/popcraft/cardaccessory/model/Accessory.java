@@ -1,6 +1,7 @@
 package cn.popcraft.cardaccessory.model;
 
 import java.util.Map;
+import java.util.List;
 
 public class Accessory {
     private final String id;
@@ -12,10 +13,12 @@ public class Accessory {
     private final String requiredClass;
     private final int maxLevel;
     private final Map<Integer, UpgradeLevel> upgradeLevels;
+    private final List<Effect> effects; // 新增：饰品效果列表
 
     public Accessory(String id, String name, String[] lore, String itemIdentifier, 
                      double skillDamageMultiplier, String permission, String requiredClass,
-                     int maxLevel, Map<Integer, UpgradeLevel> upgradeLevels) {
+                     int maxLevel, Map<Integer, UpgradeLevel> upgradeLevels,
+                     List<Effect> effects) { // 新增：构造函数参数
         this.id = id;
         this.name = name;
         this.lore = lore;
@@ -25,6 +28,7 @@ public class Accessory {
         this.requiredClass = requiredClass;
         this.maxLevel = maxLevel;
         this.upgradeLevels = upgradeLevels;
+        this.effects = effects; // 新增：初始化效果列表
     }
 
     public String getId() {
@@ -69,5 +73,10 @@ public class Accessory {
     
     public boolean hasUpgradeLevel(int level) {
         return upgradeLevels.containsKey(level);
+    }
+    
+    // 新增：获取饰品效果列表
+    public List<Effect> getEffects() {
+        return effects;
     }
 }

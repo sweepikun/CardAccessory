@@ -104,9 +104,28 @@ public class ItemManager {
             List<String> loreList = config.getStringList(path + "lore");
             String[] lore = loreList.toArray(new String[0]);
             String item = config.getString(path + "item", "PAPER");
-            double multiplier = config.getDouble(path + "base_skill_damage_multiplier", 1.0);
+            double multiplier = config.getDouble(path + "skill_damage_multiplier", 1.0);
             String permission = config.getString(path + "permission", "");
             String requiredClass = config.getString(path + "required_class", "");
+            
+            // 新增：加载饰品效果
+            List<Effect> effects = new ArrayList<>();
+            if (config.isConfigurationSection(path + "effects")) {
+                for (String effectKey : config.getConfigurationSection(path + "effects").getKeys(false)) {
+                    String effectPath = path + "effects." + effectKey + ".";
+                    String type = config.getString(effectPath + "type", "");
+                    String target = config.getString(effectPath + "target", "");
+                    
+                    Map<String, Object> options = new HashMap<>();
+                    if (config.isConfigurationSection(effectPath + "options")) {
+                        for (String optionKey : config.getConfigurationSection(effectPath + "options").getKeys(false)) {
+                            options.put(optionKey, config.get(effectPath + "options." + optionKey));
+                        }
+                    }
+                    
+                    effects.add(new Effect(type, target, options));
+                }
+            }
             
             // 加载升级系统
             int maxLevel = 1;
@@ -147,7 +166,7 @@ public class ItemManager {
                 }
             }
 
-            accessories.put(id, new Accessory(id, name, lore, item, multiplier, permission, requiredClass, maxLevel, upgradeLevels));
+            accessories.put(id, new Accessory(id, name, lore, item, multiplier, permission, requiredClass, maxLevel, upgradeLevels, effects));
         }
     }
 
