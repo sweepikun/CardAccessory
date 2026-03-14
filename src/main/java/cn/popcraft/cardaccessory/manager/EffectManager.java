@@ -11,11 +11,9 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class EffectManager {
-    // 使用确定性UUID：基于玩家UUID + 属性名生成，避免重复添加
     private static final Map<String, UUID> ATTRIBUTE_UUIDS = new HashMap<>();
 
     static {
-        // 为每个属性预生成命名空间UUID
         ATTRIBUTE_UUIDS.put("MAX_HEALTH", UUID.nameUUIDFromBytes("CardAccessory-MAX_HEALTH".getBytes()));
         ATTRIBUTE_UUIDS.put("ATTACK_DAMAGE", UUID.nameUUIDFromBytes("CardAccessory-ATTACK_DAMAGE".getBytes()));
         ATTRIBUTE_UUIDS.put("MOVEMENT_SPEED", UUID.nameUUIDFromBytes("CardAccessory-MOVEMENT_SPEED".getBytes()));
@@ -25,10 +23,8 @@ public class EffectManager {
         PlayerEquipment equipment = CardAccessorySystem.getInstance()
             .getEquipManager().getPlayerEquipment(player);
 
-        // 先移除旧的修饰符
         removeAllBukkitAttributes(player);
 
-        // 计算总属性值
         Map<String, Double> totalAttributes = new HashMap<>();
 
         for (int i = 0; i < 4; i++) {
@@ -38,11 +34,9 @@ public class EffectManager {
                 int level = cardSlot.getLevel();
                 var card = CardAccessorySystem.getInstance().getItemManager().getCard(cardId);
                 if (card != null) {
-                    // 基础属性
                     card.getAttributes().forEach((attr, value) ->
                         totalAttributes.merge(attr, value, Double::sum)
                     );
-                    // 升级属性
                     if (level > 1 && card.hasUpgradeLevel(level)) {
                         var upgradeLevel = card.getUpgradeLevel(level);
                         if (upgradeLevel != null && upgradeLevel.getAttributes() != null) {
@@ -55,7 +49,6 @@ public class EffectManager {
             }
         }
 
-        // 应用总属性
         totalAttributes.forEach((attr, value) -> applyBukkitAttribute(player, attr, value));
     }
 
@@ -93,8 +86,8 @@ public class EffectManager {
             if (attributeInstance == null) return;
 
             UUID modifierId = getAttributeUUID(player, attribute);
-            // 先移除同名修饰符
-            attributeInstance.removeModifier(modifierId);
+            // 先移除同UUID修饰符
+            removeModifierByUUID(attributeInstance, modifierId);
 
             AttributeModifier modifier = new AttributeModifier(
                 modifierId,
@@ -120,9 +113,18 @@ public class EffectManager {
                 if (attributeInstance == null) continue;
 
                 UUID modifierId = getAttributeUUID(player, attr);
-                attributeInstance.removeModifier(modifierId);
+                removeModifierByUUID(attributeInstance, modifierId);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private static void removeModifierByUUID(AttributeInstance instance, UUID uuid) {
+        for (AttributeModifier modifier : instance.getModifiers()) {
+            if (modifier.getUniqueId().equals(uuid)) {
+                instance.removeModifier(modifier);
+                return;
             }
         }
     }
@@ -141,7 +143,6 @@ public class EffectManager {
     }
 
     private static UUID getAttributeUUID(Player player, String attribute) {
-        // 为每个玩家+属性组合生成唯一UUID
         UUID baseUuid = ATTRIBUTE_UUIDS.get(attribute.toUpperCase());
         if (baseUuid == null) {
             baseUuid = UUID.nameUUIDFromBytes(("CardAccessory-" + attribute).getBytes());

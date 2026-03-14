@@ -12,6 +12,7 @@ import cn.popcraft.cardaccessory.listener.PlayerDataListener;
 import cn.popcraft.cardaccessory.listener.SkillDamageListener;
 import cn.popcraft.cardaccessory.listener.UpgradeGUIListener;
 import cn.popcraft.cardaccessory.manager.DataManager;
+import cn.popcraft.cardaccessory.manager.EffectManager;
 import cn.popcraft.cardaccessory.manager.EquipManager;
 import cn.popcraft.cardaccessory.manager.ItemManager;
 import org.bukkit.Bukkit;
