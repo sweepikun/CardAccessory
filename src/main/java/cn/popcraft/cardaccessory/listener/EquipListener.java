@@ -3,6 +3,8 @@ package cn.popcraft.cardaccessory.listener;
 import cn.popcraft.cardaccessory.CardAccessorySystem;
 import cn.popcraft.cardaccessory.hook.MythicClassHook;
 import cn.popcraft.cardaccessory.manager.EffectManager;
+import cn.popcraft.cardaccessory.manager.EquipManager;
+import cn.popcraft.cardaccessory.manager.ItemManager;
 import cn.popcraft.cardaccessory.model.Card;
 import cn.popcraft.cardaccessory.model.EquipmentSlot;
 import cn.popcraft.cardaccessory.model.PlayerEquipment;
@@ -41,7 +43,7 @@ public class EquipListener implements Listener {
         }
     }
 
-    private void equipCard(Player player, ItemStack item, var itemManager, var equipManager) {
+    private void equipCard(Player player, ItemStack item, ItemManager itemManager, EquipManager equipManager) {
         String cardId = itemManager.getCardId(item);
         if (cardId == null) return;
 
@@ -91,7 +93,7 @@ public class EquipListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "成功装备卡牌：" + card.getName());
     }
 
-    private void equipAccessory(Player player, ItemStack item, var itemManager, var equipManager) {
+    private void equipAccessory(Player player, ItemStack item, ItemManager itemManager, EquipManager equipManager) {
         String accessoryId = itemManager.getAccessoryId(item);
         if (accessoryId == null) return;
 
