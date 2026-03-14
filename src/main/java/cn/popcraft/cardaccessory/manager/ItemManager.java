@@ -200,13 +200,13 @@ public class ItemManager {
             meta.setLore(lore);
             
             // 添加PDC标签
-            meta.getPersistentDataContainer().set(NBTKeys.CARD_ID, PersistentDataType.STRING, cardId);
-            
+            meta.getPersistentDataContainer().set(NBTKeys.getCardId(), PersistentDataType.STRING, cardId);
+
             item.setItemMeta(meta);
         }
         return item;
     }
-    
+
     public ItemStack createCardItem(String cardId) {
         return createCardItem(cardId, 1);
     }
@@ -241,8 +241,8 @@ public class ItemManager {
             meta.setLore(lore);
             
             // 添加PDC标签
-            meta.getPersistentDataContainer().set(NBTKeys.ACCESSORY_ID, PersistentDataType.STRING, accessoryId);
-            
+            meta.getPersistentDataContainer().set(NBTKeys.getAccessoryId(), PersistentDataType.STRING, accessoryId);
+
             item.setItemMeta(meta);
         }
         return item;
@@ -275,17 +275,17 @@ public class ItemManager {
         }
         
         ItemMeta meta = item.getItemMeta();
-        return meta.getPersistentDataContainer().get(NBTKeys.CARD_ID, PersistentDataType.STRING);
+        return meta.getPersistentDataContainer().get(NBTKeys.getCardId(), PersistentDataType.STRING);
     }
-    
+
     // 通过物品获取饰品ID
     public String getAccessoryId(ItemStack item) {
         if (item == null || !item.hasItemMeta()) {
             return null;
         }
-        
+
         ItemMeta meta = item.getItemMeta();
-        return meta.getPersistentDataContainer().get(NBTKeys.ACCESSORY_ID, PersistentDataType.STRING);
+        return meta.getPersistentDataContainer().get(NBTKeys.getAccessoryId(), PersistentDataType.STRING);
     }
     
     // 检查物品是否为卡牌

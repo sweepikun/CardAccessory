@@ -3,47 +3,52 @@ package cn.popcraft.cardaccessory.listener;
 import cn.popcraft.cardaccessory.CardAccessorySystem;
 import cn.popcraft.cardaccessory.manager.DataManager;
 import cn.popcraft.cardaccessory.manager.EffectManager;
+import cn.popcraft.cardaccessory.model.PlayerEquipment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerDataListener implements Listener {
-    
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // 异步加载玩家数据
+        Player player = event.getPlayer();
+
         CardAccessorySystem.getInstance().getServer().getScheduler().runTaskAsynchronously(
-            CardAccessorySystem.getInstance(), 
+            CardAccessorySystem.getInstance(),
             () -> {
-                var equipment = DataManager.loadPlayerData(event.getPlayer().getUniqueId());
-                CardAccessorySystem.getInstance().getEquipManager()
-                    .setPlayerEquipment(event.getPlayer(), equipment);
-                
-                // 同步应用卡牌效果
+                PlayerEquipment equipment = DataManager.loadPlayerData(player.getUniqueId());
+
                 CardAccessorySystem.getInstance().getServer().getScheduler().runTask(
                     CardAccessorySystem.getInstance(),
-                    () -> EffectManager.applyCardEffects(event.getPlayer())
+                    () -> {
+                        if (!player.isOnline()) return;
+
+                        CardAccessorySystem.getInstance().getEquipManager()
+                            .setPlayerEquipment(player, equipment);
+
+                        EffectManager.removeCardEffects(player);
+                        EffectManager.applyCardEffects(player);
+                    }
                 );
             }
         );
     }
-    
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // 移除卡牌效果
-        EffectManager.removeCardEffects(event.getPlayer());
-        
-        // 清除属性修饰符记录
-        EffectManager.clearPlayerModifiers(event.getPlayer());
-        
-        // 保存玩家数据
-        var equipment = CardAccessorySystem.getInstance().getEquipManager()
-            .getPlayerEquipment(event.getPlayer());
-        DataManager.savePlayerData(event.getPlayer().getUniqueId(), equipment);
-        
-        // 清理内存中的数据
+        Player player = event.getPlayer();
+
+        EffectManager.removeCardEffects(player);
+        EffectManager.clearPlayerModifiers(player);
+
+        PlayerEquipment equipment = CardAccessorySystem.getInstance().getEquipManager()
+            .getPlayerEquipment(player);
+        DataManager.savePlayerData(player.getUniqueId(), equipment);
+
         CardAccessorySystem.getInstance().getEquipManager()
-            .removePlayerEquipment(event.getPlayer());
+            .removePlayerEquipment(player);
     }
 }

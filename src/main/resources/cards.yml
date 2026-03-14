@@ -5,8 +5,33 @@ cards:
       - "&7提升生命值上限"
       - "&e+20 最大生命值"
     item: "NETHERITE_SCRAP"
-    attributes:
+    permission: ""
+    required_class: ""
+    base_attributes:
       MAX_HEALTH: 20.0
+    upgrade:
+      max_level: 5
+      levels:
+        2:
+          attributes:
+            MAX_HEALTH: 28.0
+          cost_to_next:
+            - type: "item"
+              id: "EMERALD"
+              amount: 5
+            - type: "currency"
+              id: "playerpoints"
+              amount: 50
+        3:
+          attributes:
+            MAX_HEALTH: 40.0
+          cost_to_next:
+            - type: "item"
+              id: "DIAMOND"
+              amount: 2
+            - type: "currency"
+              id: "playerpoints"
+              amount: 100
 
   ice_brain:
     name: "&b寒冰之脑"
@@ -14,5 +39,20 @@ cards:
       - "&7提升攻击力"
       - "&e+5 攻击伤害"
     item: "BLUE_ICE"
-    attributes:
+    permission: ""
+    required_class: ""
+    base_attributes:
       ATTACK_DAMAGE: 5.0
+    upgrade:
+      max_level: 3
+      levels:
+        2:
+          attributes:
+            ATTACK_DAMAGE: 8.0
+          cost_to_next:
+            - type: "item"
+              id: "ICE"
+              amount: 10
+            - type: "currency"
+              id: "playerpoints"
+              amount: 30
